@@ -21,3 +21,14 @@ class FamilyMember(models.Model):
     profile = models.ForeignKey(Profile)
     name = models.CharField(max_length=100)
     relationship = models.CharField(max_length=100)
+
+
+
+class Timeline(models.Model):
+    title = models.CharField(max_length=25)
+    description = models.CharField(max_length=200)
+    year = models.PositiveSmallIntegerField()
+    created_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.title

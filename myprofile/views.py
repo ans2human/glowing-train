@@ -1,9 +1,11 @@
 from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
-
-from .models import Profile
-from .forms import FamilyMemberFormSet
+from django.shortcuts import redirect
+from .models import Profile, Timeline
+from .forms import FamilyMemberFormSet, TimelineFormSet, TimelineForm
+from django.forms import formset_factory
+from django.shortcuts import render
 
 
 class ProfileList(ListView):
@@ -74,3 +76,22 @@ class ProfileFamilyMemberUpdate(UpdateView):
 class ProfileDelete(DeleteView):
     model = Profile
     success_url = reverse_lazy('profile-list')
+
+
+
+def manage_articles(request):
+    # TimelineFormSet = formset_factory(TimelineForm)
+    if request.method == 'POST':
+        formset = TimelineFormSet(request.POST, request.FILES)
+        if formset.is_valid():
+            for forms in formset:
+                forms.save()
+            return redirect('profile-list')
+    else:
+        formset = TimelineFormSet()
+    return render(request, 'add_timeline_form.html', {'formset': formset})
+
+def timeline_view(request):
+    context['titles'] = Timeline.obects.all()
+    context['timeline'] = Timeline.obects.filter(title=query)
+    return render(request, 'timeline.html', context)
